@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<typeSystemDescription xmlns="http://uima.apache.org/resourceSpecifier">
+    <name>hw1-dishang-typesystem</name>
+    <description/>
+    <version>1.0</version>
+    <vendor/>
+  <types>
+    <typeDescription>
+      <name>model.annotators.BaseAnnotator</name>
+      <description>Base Annotator which every other Annotator subtype will extend. Contains the 'source' and 'confidence' features.</description>
+      <supertypeName>uima.tcas.Annotation</supertypeName>
+      <features>
+        <featureDescription>
+          <name>source</name>
+          <description>Keeps track of where the annotation was made.</description>
+          <rangeTypeName>uima.cas.String</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>confidence</name>
+          <description>Keeps track of the confidence level of the annotation.</description>
+          <rangeTypeName>uima.cas.Float</rangeTypeName>
+        </featureDescription>
+      </features>
+    </typeDescription>
+    <typeDescription>
+      <name>model.annotators.TokenAnnotator</name>
+      <description>Annotates the tokens in the document.</description>
+      <supertypeName>model.annotators.BaseAnnotator</supertypeName>
+      <features>
+        <featureDescription>
+          <name>tokenizer</name>
+          <description>Uses the Tokenizer type to set the length of the token to 1 and tokenize the sentence.</description>
+          <rangeTypeName>model.tools.Tokenizer</rangeTypeName>
+        </featureDescription>
+      </features>
+    </typeDescription>
+    <typeDescription>
+      <name>model.tools.Tokenizer</name>
+      <description>Tokenizes sentences using the standard NLP tools (e.g. Stanford NLP Tokenizer).</description>
+      <supertypeName>uima.cas.TOP</supertypeName>
+      <features>
+        <featureDescription>
+          <name>tokenLength</name>
+          <description>Specifies the size of the token (1-gram, 2-gram, 3-gram etc.).</description>
+          <rangeTypeName>uima.cas.Integer</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>tokens</name>
+          <description>Stores the tokens obtained in an array of Strings.</description>
+          <rangeTypeName>uima.cas.StringArray</rangeTypeName>
+        </featureDescription>
+      </features>
+    </typeDescription>
+    <typeDescription>
+      <name>model.annotators.NGramAnnotator</name>
+      <description>Annotates 1,2 and 3 gram tokens.</description>
+      <supertypeName>model.annotators.BaseAnnotator</supertypeName>
+      <features>
+        <featureDescription>
+          <name>ngramTokenizer</name>
+          <description>Tokenizes sentences using the Tokenizer type, with variable length (1,2 or 3).</description>
+          <rangeTypeName>model.tools.Tokenizer</rangeTypeName>
+        </featureDescription>
+      </features>
+    </typeDescription>
+    <typeDescription>
+      <name>model.annotators.SentenceAnnotator</name>
+      <description>Annotates questions, answers and whether the answer is correct or not.</description>
+      <supertypeName>model.annotators.BaseAnnotator</supertypeName>
+      <features>
+        <featureDescription>
+          <name>isQuestion</name>
+          <description>Identifier flag for whether the sentence is a question or answer.</description>
+          <rangeTypeName>uima.cas.Boolean</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>isCorrect</name>
+          <description>Identifier flag for whether the answer is correct or not.</description>
+          <rangeTypeName>uima.cas.Boolean</rangeTypeName>
+        </featureDescription>
+      </features>
+    </typeDescription>
+    <typeDescription>
+      <name>model.scoring.AbstractMetric</name>
+      <description>Abstract Class which other subtype answer scoring methods would extend.</description>
+      <supertypeName>uima.cas.TOP</supertypeName>
+    </typeDescription>
+    <typeDescription>
+      <name>model.scoring.BagOfWords</name>
+      <description>Simple Bag of Words token matching for scoring.</description>
+      <supertypeName>model.scoring.AbstractMetric</supertypeName>
+    </typeDescription>
+    <typeDescription>
+      <name>model.scoring.ProbabilisticScoring</name>
+      <description>We can use various statistical/probalisting scoring measures like KL-Divergence, Mutual Information etc. to score the answers.</description>
+      <supertypeName>model.scoring.AbstractMetric</supertypeName>
+      <features>
+        <featureDescription>
+          <name>klDivergence</name>
+          <description>KL-Divergence score for an answer.</description>
+          <rangeTypeName>uima.cas.Double</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>mutualInformaiton</name>
+          <description>Mutual Information score for an answer.</description>
+          <rangeTypeName>uima.cas.Double</rangeTypeName>
+        </featureDescription>
+      </features>
+    </typeDescription>
+    <typeDescription>
+      <name>model.scoring.MLClassification</name>
+      <description>We can use popular Machine Learning algorithms like Naive Bayes or Logistic Regression to assign an answer score between 0 and 1.</description>
+      <supertypeName>model.scoring.AbstractMetric</supertypeName>
+      <features>
+        <featureDescription>
+          <name>logisticRegression</name>
+          <description>Scores between 0 and 1.</description>
+          <rangeTypeName>uima.cas.Double</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>naiveBayes</name>
+          <description>Scores between 0 and 1.</description>
+          <rangeTypeName>uima.cas.Double</rangeTypeName>
+        </featureDescription>
+      </features>
+    </typeDescription>
+    <typeDescription>
+      <name>model.evaluation.Evaluator</name>
+      <description>Sorts the answers based on highest scores and computes precision @N, where N is the number of correct answers in the original sample.</description>
+      <supertypeName>uima.cas.TOP</supertypeName>
+      <features>
+        <featureDescription>
+          <name>sort</name>
+          <description>Array sorted based on scores of the answers.</description>
+          <rangeTypeName>uima.cas.DoubleArray</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>ids</name>
+          <description>Keeps track of the sorted answers by assigning each one a unique ID (usually just the position in the array itself).</description>
+          <rangeTypeName>uima.cas.IntegerArray</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>precision</name>
+          <description>Computes precision@N.</description>
+          <rangeTypeName>uima.cas.Double</rangeTypeName>
+        </featureDescription>
+      </features>
+    </typeDescription>
+    <typeDescription>
+      <name>model.tools.ML</name>
+      <description>Machine Learning Toolkit (e.g. Weka)</description>
+      <supertypeName>uima.cas.TOP</supertypeName>
+    </typeDescription>
+    <typeDescription>
+      <name>model.tools.NLP</name>
+      <description>NLP Toolkit like OpenNLP or Stanford NLP.</description>
+      <supertypeName>uima.cas.TOP</supertypeName>
+    </typeDescription>
+    <typeDescription>
+      <name>model.Input</name>
+      <description>Input to the model.</description>
+      <supertypeName>uima.tcas.DocumentAnnotation</supertypeName>
+      <features>
+        <featureDescription>
+          <name>path</name>
+          <description>Specifies the location for the data file.</description>
+          <rangeTypeName>uima.cas.String</rangeTypeName>
+        </featureDescription>
+      </features>
+    </typeDescription>
+    <typeDescription>
+      <name>model.Ouput</name>
+      <description>Displays the final output precision computed by the Evaluator type.</description>
+      <supertypeName>uima.cas.TOP</supertypeName>
+      <features>
+        <featureDescription>
+          <name>display</name>
+          <description>Displays the model output.</description>
+          <rangeTypeName>uima.cas.String</rangeTypeName>
+        </featureDescription>
+      </features>
+    </typeDescription>
+  </types>
+</typeSystemDescription>
